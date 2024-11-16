@@ -1,0 +1,32 @@
+[project]
+name = "client"
+version = "0.1.0"
+private = true
+description = "FNG Admin Client"
+authors = [
+    { name = "Alex Wright", email = "alexwright1324@gmail.com" }
+]
+dependencies = [
+    "dbus-next>=0.2.3",
+    "websockets>=14.1",
+    "dataclasses-json>=0.6.7",
+    "nuitka>=2.5",
+]
+requires-python = ">= 3.8"
+
+[project.scripts]
+"client" = "client:__main__"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/client"]

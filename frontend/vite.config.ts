@@ -1,7 +1,12 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { sveltekit } from "@sveltejs/kit/vite"
+import { defineConfig } from "vite"
+import ws from "vite-sveltekit-node-ws"
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+	plugins: [sveltekit(), ws()],
+	server: {
+		watch: {
+			ignored: ["**/.direnv**"],
+		},
+	},
 })
