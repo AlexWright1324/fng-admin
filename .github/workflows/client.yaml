@@ -28,6 +28,7 @@ jobs:
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
           sudo apt-get update -y
           sudo apt-get install gcc-13
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 13
           rye sync --no-lock
 
       - name: Build with Nuitka
