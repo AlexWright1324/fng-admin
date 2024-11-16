@@ -12,9 +12,6 @@ jobs:
     defaults:
       run:
         working-directory: ./client
-    strategy:
-      matrix:
-        python-version: ["3.12"]
 
     steps:
       - uses: actions/checkout@v4
@@ -22,16 +19,15 @@ jobs:
       - uses: eifinger/setup-rye@v4
         id: setup-rye
         with:
-          enable-cache: true
+          version: "0.42.0"
           working-directory: ./client
-          cache-prefix: ${{ matrix.python-version }}
-
-      - name: Pin python-version ${{ matrix.python-version }}
-        run: rye pin ${{ matrix.python-version }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        if: steps.setup-rye.outputs.cache-hit != 'true'
-        run: rye sync --no-lock
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev
+          rye sync --no-lock
 
       - name: Build with Nuitka
         run: rye run python -m nuitka --standalone --onefile src/client
