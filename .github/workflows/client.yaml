@@ -23,20 +23,14 @@ jobs:
           working-directory: ./client
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
+      - name: Install dependencies and Build
         run: |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-          sudo apt-get update -y
-          sudo apt-get install gcc-13
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 13
-          rye sync --no-lock
-
-      - name: Build with Nuitka
-        run: rye run python -m nuitka --standalone --onefile src/client
+          rye sync --no-lock 
+          rye build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: client
-          path: client/client.bin
+          path: client/dist
           include-hidden-files: true

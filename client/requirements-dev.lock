@@ -18,10 +18,6 @@ marshmallow==3.23.1
     # via dataclasses-json
 mypy-extensions==1.0.0
     # via typing-inspect
-nuitka==2.5
-    # via client
-ordered-set==4.1.0
-    # via nuitka
 packaging==24.2
     # via marshmallow
 typing-extensions==4.12.2
@@ -30,5 +26,3 @@ typing-inspect==0.9.0
     # via dataclasses-json
 websockets==14.1
     # via client
-zstandard==0.23.0
-    # via nuitka
