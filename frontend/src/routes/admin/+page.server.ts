@@ -6,7 +6,7 @@ export const actions = {
         const force = formData.get("force") ? true : false
 
         computers.forEach((computer) => {
-            computer.webSocket.send(JSON.stringify(
+            computer.ws.send(JSON.stringify(
                 {
                     command: "logout",
                     data: {
