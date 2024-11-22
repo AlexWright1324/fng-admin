@@ -3,15 +3,13 @@ import { produce, type Unsafe } from 'sveltekit-sse'
 import { get } from 'svelte/store'
 
 export const POST = ({ params }) => {
-    const computer = computers.get(params.hostname)
-
     return produce(async function start({ emit, lock }) {
         await new Promise(async function start(resolve) {
             const computer = computers.get(params.hostname)
             if (!computer) {
                 return
             }
-            computer.log.subscribe(async (data) => {
+            computer.commandLog.subscribe(async (data) => {
                 const { error } = emit("log", data)
                 if (error) {
                     resolve(error)

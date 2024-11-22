@@ -32,7 +32,11 @@
     "@auth/sveltekit": "^1.7.2",
     "@battlefieldduck/xterm-svelte": "^2.0.1",
     "@fontsource/inter": "^5.1.0",
-    "@unocss/reset": "^0.63.6",
-    "vite-sveltekit-node-ws": "^0.0.8"
+    "@unocss/reset": "^0.63.6"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": false,
+    "trailingComma": "all"
   }
 }

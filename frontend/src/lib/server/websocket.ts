@@ -1,47 +1,54 @@
-import { WebSocketServer, WebSocket } from "ws";
-import { writable, type Writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store"
+import type { ServerWebSocket, WebSocketHandler } from "svelte-adapter-bun"
 
 interface Computer {
-    webSocket: WebSocket;
-    log: Writable<string>;
+  ws: ServerWebSocket<ServerData>
+  commandLog: Writable<string>
+}
+
+interface ServerData {
+  hostname: string
 }
 
 export const computers = new Map<string, Computer>()
 
-export const webSocketServer = (server) => {
-    const webSocketServer = new WebSocketServer({ server });
+export const handleWebSocket: WebSocketHandler<ServerData> = {
+  open(ws) {
+    const computer = computers.get(ws.data.hostname)
+    if (computer) {
+      return ws.close(0, "Connection established to hostname elsewhere")
+    }
 
-    webSocketServer.on("connection", (socket, request) => {
-        // Janky way to get the hostname
-        const url = new URL(`http://127.0.0.1/${request.url ? request.url : ""}`);
+    computers.set(ws.data.hostname, { ws, commandLog: writable("") })
+  },
+  close(ws, code, message) {
+      computers.delete(ws.data.hostname)
+  },
+  message(ws, message) {
+    const computer = computers.get(ws.data.hostname)
+    if (!computer) {
+      return
+    }
+    try {
+      const log = JSON.parse(message.toString())
+      computer.commandLog.set(log.data.stdout + log.data.stderr)
+    } catch (e) {}
+  },
+  upgrade(request, upgrade) {
+    const url = new URL(request.url)
+    if (!url.pathname.startsWith("/ws")) {
+      return false
+    }
 
-        const hostname = url.searchParams.get("hostname");
-        if (!hostname) {
-            console.log("NO")
-            socket.close(3000, "No hostname");
-            return;
-        }
+    const hostname = url.searchParams.get("hostname")
+    if (!hostname) {
+      return false
+    }
 
-        computers.get(hostname)?.webSocket.close(3000, "New connection established elsewhere");
-        computers.set(hostname, { webSocket: socket, log: writable("") });
-
-        console.log(`${hostname} connected`)
-
-        socket.on("message", (data, isBinary) => {
-            const computer = computers.get(hostname);
-            if (!computer) {
-                return;
-            }
-            try {
-                const log = JSON.parse(data.toString());
-                computer.log.set(log.data.stdout + log.data.stderr);
-            } catch (e) {
-            }
-        });
-
-        socket.on("close", () => {
-            console.log(`${hostname} disconnected`);
-            computers.delete(hostname);
-        });
-    });
+    return upgrade(request, {
+      data: {
+        hostname,
+      },
+    })
+  },
 }

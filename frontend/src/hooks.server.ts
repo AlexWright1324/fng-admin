@@ -1,10 +1,5 @@
-import { sequence } from "@sveltejs/kit/hooks"
-import { handle as handleAuth } from "$lib/server/auth"
-import { useServer } from "vite-sveltekit-node-ws";
-import { webSocketServer } from "$lib/server/websocket";
+import { handleWebSocket } from "$lib/server/websocket"
 
-export const handle = sequence(handleAuth)
+export { handle } from "$lib/server/auth"
 
-useServer(webSocketServer, (pathname: string) => {
-    return pathname.startsWith('/ws')
-})
+export const handleWebsocket = handleWebSocket
